@@ -61,6 +61,18 @@ function Borrow() {
   const [totalPages, setTotalPages] = useState(1);
   const perPage = 5;
 
+  // Helper function to safely format dates
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "N/A";
+    try {
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return "N/A";
+      return date.toLocaleDateString("vi-VN");
+    } catch (err) {
+      return "N/A";
+    }
+  };
+
   const loadBorrows = async () => {
     try {
       const data = await api.borrows.search("", "", currentPage - 1, perPage);
@@ -118,11 +130,20 @@ function Borrow() {
     }
 
     try {
+      // Ensure dates are properly formatted (YYYY-MM-DD or ISO string)
+      const borrowDateObj = new Date(form.borrowDate);
+      const dueDateObj = new Date(form.dueDate);
+      
+      if (isNaN(borrowDateObj.getTime()) || isNaN(dueDateObj.getTime())) {
+        alert("Định dạng ngày không hợp lệ!");
+        return;
+      }
+
       await api.borrows.create({
         readerId: Number(form.readerId),
         bookId: Number(form.bookId),
-        borrowDate: new Date(form.borrowDate),
-        dueDate: new Date(form.dueDate),
+        borrowDate: borrowDateObj.toISOString().split('T')[0],
+        dueDate: dueDateObj.toISOString().split('T')[0],
       });
       loadBorrows();
       closeModal();
@@ -315,8 +336,8 @@ function Borrow() {
                   <TableCell align="center">{b.id}</TableCell>
                   <TableCell align="center">{b.readerName}</TableCell>
                   <TableCell align="center">{b.bookTitle}</TableCell>
-                  <TableCell align="center">{b.borrowDate ? new Date(b.borrowDate).toLocaleDateString("vi-VN") : "N/A"}</TableCell>
-                  <TableCell align="center">{b.dueDate ? new Date(b.dueDate).toLocaleDateString("vi-VN") : "N/A"}</TableCell>
+                  <TableCell align="center">{formatDate(b.borrowDate)}</TableCell>
+                  <TableCell align="center">{formatDate(b.dueDate)}</TableCell>
                   <TableCell align="center">
                     <Chip
                       label={b.status}

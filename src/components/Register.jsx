@@ -11,8 +11,6 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  MenuItem,
-  Select,
 } from "@mui/material";
 
 import {
@@ -40,7 +38,6 @@ function Register() {
     name: "",
     email: "",
     password: "",
-    role: "staff",
   });
 
   // REGISTER
@@ -60,7 +57,7 @@ function Register() {
     }
 
     try {
-      await api.auth.register(form.email.trim(), form.password, form.role);
+      await api.auth.register(form.email.trim(), form.password, "staff");
       
       setSuccess("Đăng ký thành công");
 
@@ -69,7 +66,6 @@ function Register() {
         name: "",
         email: "",
         password: "",
-        role: "staff",
       });
 
       // REDIRECT LOGIN
@@ -236,38 +232,6 @@ function Register() {
                 },
             }}
           />
-        </Box>
-
-        {/* ROLE */}
-        <Box mb={3}>
-          <Typography
-            fontWeight="bold"
-            mb={1}
-          >
-            Vai trò
-          </Typography>
-
-          <Select
-            fullWidth
-            value={form.role}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                role: e.target.value,
-              })
-            }
-            sx={{
-              borderRadius: "16px",
-            }}
-          >
-            <MenuItem value="admin">
-              Admin
-            </MenuItem>
-
-            <MenuItem value="staff">
-              Staff
-            </MenuItem>
-          </Select>
         </Box>
 
         {/* PASSWORD */}
